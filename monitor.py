@@ -49,6 +49,6 @@ def metrics(data):
     output = concept_drift_detector.calculate_concept_drift(
         pre_defined_metric='jensen-shannon',
         user_defined_metric=None,
-    ).to_dict(orient='records')
+    )
     
     yield output
