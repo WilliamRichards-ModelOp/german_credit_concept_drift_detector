@@ -40,7 +40,7 @@ def metrics(data):
     monitor_parameters = set_detector_parameters(schema)
     
     concept_drift_detector = ConceptDriftDetector(
-        df_baseline=df_baseine,
+        df_baseline=df_baseline,
         df_sample=data,
         target_column=monitor_parameters["score_column"][0],
         label_type="categorical"
