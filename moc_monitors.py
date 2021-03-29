@@ -401,6 +401,128 @@ class DriftDetector:
         return fig
 
 
+class ConceptDriftDetector:
+    """
+    A class to compute differences (by some metric) between baseline
+     and sample target columns.
+
+    Methods
+    -------
+    calculate_concept_drift:
+        Calculates drift between baseline and sample datasets according to
+        a pre-defined metric or a user-defined metric.
+
+    Args
+    ----
+    df_baseline: <pandas.DataFrame>
+        Pandas DataFrame of the baseline dataset. 
+
+    df_sample: <pandas.DataFrame>
+        Pandas DataFrame of the sample dataset.
+
+    target_column: <str>
+        Column containing predicted (or true) values.
+
+    label_type: <str>
+        'categorical' or 'numerical' to reflect classification or regression.
+    """
+
+    def __init__(
+        self,
+        df_baseline,
+        df_sample,
+        target_column,
+        label_type):
+        
+        assert isinstance(
+            df_baseline, pd.DataFrame
+        ), 'df_baseline should be of type <pandas.DataFrame>.'
+
+        assert isinstance(
+            df_sample, pd.DataFrame
+        ), 'df_baseline should be of type <pandas.DataFrame>.'
+
+        assert all(
+            df_baseline.columns == df_sample.columns
+        ), 'df_baseline and df_sample should have the same column names.'
+
+        assert all(
+            df_baseline.dtypes == df_sample.dtypes
+        ), 'df_baseline and df_sample should have the same column types.'
+
+        assert (
+            target_column in df_baseline.columns
+        ), 'target_column does not exist in df_baseline.'
+
+        assert label_type in (
+            'categorical', 'numerical',
+        ), "label_type should be either 'categroical' or 'numerical'."
+
+        df_baseline_ = copy.deepcopy(df_baseline)
+        df_sample_ = copy.deepcopy(df_sample)
+
+        # Set attributes
+        self.df_baseline = df_baseline_
+        self.df_sample = df_sample_
+
+        self.target_column = target_column
+        self.label_type = label_type
+
+
+    def calculate_concept_drift(
+        self, 
+        pre_defined_metric=None,
+        user_defined_metric=None):
+        """
+        Calculates concept drift between target columns of baseline and sample 
+        datasets according to a pre-defined metric (jensen-shannon distance or KS) 
+        or a user-defined metric.
+
+        param: pre_defined_metric: <str>
+               'jensen-shannon' or 'ks'.
+        param: user_defined_metric: <function>
+               function defined by user to compute concept drift.
+
+        return: drift measures as computed by some metric function.
+        """
+
+        if (pre_defined_metric is not None) and (user_defined_metric is not None):
+            raise ValueError(
+                'One of pre_defined_metric or user_defined_metric must be None.'
+            )
+
+        elif pre_defined_metric is not None:
+            # Remove capitalization
+            pre_defined_metric = pre_defined_metric.lower()
+
+            assert pre_defined_metric in (
+                'jensen-shannon', 'ks',
+            ), "pre_defined_metric should be either 'jensen-shannon' or 'ks'."
+
+            if pre_defined_metric == 'jensen-shannon':
+                return js_metric(
+                    df_1=self.df_baseline,
+                    df_2=self.df_sample,
+                    numerical_columns=[self.target_column],
+                    categorical_columns=[]
+                )
+
+            elif pre_defined_metric == 'ks':
+                return ks_metric(
+                    df_1=self.df_baseline, 
+                    df_2=self.df_sample, 
+                    numerical_columns=[self.target_column]
+                )
+        
+        # No pre_defined_metric specified - check if use_defined_metric is provided
+        elif user_defined_metric is not None:
+            return user_defined_metric
+        
+        else:
+            raise ValueError('A metric (user_defined or pre_defined) must be provided.')
+
+            
+
 class ModelEvaluator:
     """
     A class to evaluate the performance of a ML model on baseline and sample datasets.
