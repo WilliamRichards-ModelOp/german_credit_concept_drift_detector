@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import json
 import pickle
-from moc_monitors import BiasMonitor
+from moc_monitors import ConceptDriftDetector
 from moc_schema_infer import set_detector_parameters
 
 
@@ -39,16 +39,15 @@ def metrics(data):
     
     monitor_parameters = set_detector_parameters(schema)
     
-    bias_montior = BiasMonitor(
-        df=data,
-        score_column=monitor_parameters["score_column"][0],
-        label_column=monitor_parameters["label_column"][0],
-        protected_class='gender',
-        reference_group='male'
+    concept_drift_detector = ConceptDriftDetector(
+        df_baseline=df_baseine,
+        df_sample=data,
+        target_column=monitor_parameters["score_column"][0],
+        label_type="categorical"
     )
     
-    output = bias_montior.compute_bias_metrics(
-        pre_defined_metric='aequitas_bias',
+    output = concept_drift_detector.calculate_concept_drift(
+        pre_defined_metric='jensen-shannon',
         user_defined_metric=None,
     ).to_dict(orient='records')
     
