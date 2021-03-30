@@ -123,7 +123,7 @@ class DriftDetector:
                 label_column in df_baseline.columns
             ), "label_column does not exist in df_baseline."
 
-        #if label_type:
+        # if label_type:
         #    assert isinstance(label_type, str), "label_type should be of type <str>"
         #    assert label_type in (
         #        "categorical",
@@ -182,12 +182,7 @@ class DriftDetector:
         self.df_baseline = df_baseline_
         self.df_sample = df_sample_
 
-
-    def calculate_drift(
-        self, 
-        pre_defined_metric=None,
-        user_defined_metric=None
-        ):
+    def calculate_drift(self, pre_defined_metric=None, user_defined_metric=None):
 
         """
         Calculates drift between baseline and sample datasets according to
@@ -216,24 +211,23 @@ class DriftDetector:
                     df_1=self.df_baseline,
                     df_2=self.df_sample,
                     numerical_columns=self.numerical_columns,
-                    categorical_columns=self.categorical_columns
+                    categorical_columns=self.categorical_columns,
                 )
 
             elif pre_defined_metric == "ks":
                 return ks_metric(
-                    df_1=self.df_baseline, 
-                    df_2=self.df_sample, 
-                    numerical_columns=self.numerical_columns
+                    df_1=self.df_baseline,
+                    df_2=self.df_sample,
+                    numerical_columns=self.numerical_columns,
                 )
-        
+
         # No pre_defined_metric specified - check if use_defined_metric is provided
         elif user_defined_metric:
             return user_defined_metric
-        
+
         # Raise error
         else:
             print("A metric (user_defined or pre_defined) must be provided.")
-
 
     def plot_numerical(self, plot_numerical_columns=None, alpha=0.5):
         """
@@ -266,7 +260,9 @@ class DriftDetector:
 
         plot_df = pd.concat([df_baseline, df_sample])
 
-        logger.info("Plotting the following numerical column(s):", plot_numerical_columns)
+        logger.info(
+            "Plotting the following numerical column(s):", plot_numerical_columns
+        )
 
         num_numerical_features = len(plot_numerical_columns)
         column_wrap = 4
@@ -308,7 +304,6 @@ class DriftDetector:
         plt.close(fig)
 
         return fig
-
 
     def plot_categorical(self, plot_categorical_columns=None):
         """Plot histograms to compare categorical columns
@@ -427,35 +422,31 @@ class ConceptDriftDetector:
         'categorical' or 'numerical' to reflect classification or regression.
     """
 
-    def __init__(
-        self,
-        df_baseline,
-        df_sample,
-        target_column,
-        label_type):
-        
+    def __init__(self, df_baseline, df_sample, target_column, label_type):
+
         assert isinstance(
             df_baseline, pd.DataFrame
-        ), 'df_baseline should be of type <pandas.DataFrame>.'
+        ), "df_baseline should be of type <pandas.DataFrame>."
 
         assert isinstance(
             df_sample, pd.DataFrame
-        ), 'df_baseline should be of type <pandas.DataFrame>.'
+        ), "df_baseline should be of type <pandas.DataFrame>."
 
         assert all(
             df_baseline.columns == df_sample.columns
-        ), 'df_baseline and df_sample should have the same column names.'
+        ), "df_baseline and df_sample should have the same column names."
 
         assert all(
             df_baseline.dtypes == df_sample.dtypes
-        ), 'df_baseline and df_sample should have the same column types.'
+        ), "df_baseline and df_sample should have the same column types."
 
         assert (
             target_column in df_baseline.columns
-        ), 'target_column does not exist in df_baseline.'
+        ), "target_column does not exist in df_baseline."
 
         assert label_type in (
-            'categorical', 'numerical',
+            "categorical",
+            "numerical",
         ), "label_type should be either 'categroical' or 'numerical'."
 
         df_baseline_ = copy.deepcopy(df_baseline)
@@ -468,11 +459,9 @@ class ConceptDriftDetector:
         self.target_column = target_column
         self.label_type = label_type
 
-
     def calculate_concept_drift(
-        self, 
-        pre_defined_metric=None,
-        user_defined_metric=None):
+        self, pre_defined_metric=None, user_defined_metric=None
+    ):
         """
         Calculates concept drift between target columns of baseline and sample 
         datasets according to a pre-defined metric (jensen-shannon distance or KS) 
@@ -488,7 +477,7 @@ class ConceptDriftDetector:
 
         if (pre_defined_metric is not None) and (user_defined_metric is not None):
             raise ValueError(
-                'One of pre_defined_metric or user_defined_metric must be None.'
+                "One of pre_defined_metric or user_defined_metric must be None."
             )
 
         elif pre_defined_metric is not None:
@@ -496,32 +485,32 @@ class ConceptDriftDetector:
             pre_defined_metric = pre_defined_metric.lower()
 
             assert pre_defined_metric in (
-                'jensen-shannon', 'ks',
+                "jensen-shannon",
+                "ks",
             ), "pre_defined_metric should be either 'jensen-shannon' or 'ks'."
 
-            if pre_defined_metric == 'jensen-shannon':
+            if pre_defined_metric == "jensen-shannon":
                 return js_metric(
                     df_1=self.df_baseline,
                     df_2=self.df_sample,
                     numerical_columns=[self.target_column],
-                    categorical_columns=[]
+                    categorical_columns=[],
                 )
 
-            elif pre_defined_metric == 'ks':
+            elif pre_defined_metric == "ks":
                 return ks_metric(
-                    df_1=self.df_baseline, 
-                    df_2=self.df_sample, 
-                    numerical_columns=[self.target_column]
+                    df_1=self.df_baseline,
+                    df_2=self.df_sample,
+                    numerical_columns=[self.target_column],
                 )
-        
+
         # No pre_defined_metric specified - check if use_defined_metric is provided
         elif user_defined_metric is not None:
             return user_defined_metric
-        
-        else:
-            raise ValueError('A metric (user_defined or pre_defined) must be provided.')
 
-            
+        else:
+            raise ValueError("A metric (user_defined or pre_defined) must be provided.")
+
 
 class ModelEvaluator:
     """
@@ -551,13 +540,9 @@ class ModelEvaluator:
     """
 
     def __init__(
-        self,
-        df_baseline,
-        df_sample,
-        score_column,
-        label_column,
-        label_type=None):
-        
+        self, df_baseline, df_sample, score_column, label_column, label_type=None
+    ):
+
         assert isinstance(
             df_baseline, pd.DataFrame
         ), "df_baseline should be of type <pandas.DataFrame>."
@@ -574,13 +559,9 @@ class ModelEvaluator:
             df_baseline.dtypes == df_sample.dtypes
         ), "df_baseline and df_sample should have the same column types."
 
-        assert isinstance(
-            score_column, str
-        ), "score_column should be of type <str>."
+        assert isinstance(score_column, str), "score_column should be of type <str>."
 
-        assert isinstance(
-            label_column, str
-        ), "label_column should be of type <str>."
+        assert isinstance(label_column, str), "label_column should be of type <str>."
 
         assert (
             score_column in df_baseline.columns
@@ -597,17 +578,15 @@ class ModelEvaluator:
                 "numerical",
             ), "label_type should be either \
                 'categroical' (classification) or 'numerical' (regression)."
-        
+
         self.df_baseline = df_baseline
         self.df_sample = df_sample
         self.score_column = score_column
         self.label_column = label_column
         self.label_type = label_type
 
-
     def _rmse(targets, predictions):
         return np.sqrt(np.mean((predictions - targets) ** 2))
-
 
     def compare_performance(self):
         """
@@ -627,7 +606,6 @@ class ModelEvaluator:
             self._eval_regressor()
 
         return self.performance_comparison
-
 
     def _eval_regressor(self):
         """
@@ -660,7 +638,6 @@ class ModelEvaluator:
         )
 
         self.performance_comparison = metrics_df
-
 
     def _eval_classifier(self):
         """
@@ -709,7 +686,6 @@ class ModelEvaluator:
 
 
 class BiasMonitor:
-    
     def __init__(
         self,
         df=None,
@@ -725,11 +701,7 @@ class BiasMonitor:
         self.protected_class = protected_class
         self.reference_group = reference_group
 
-    def compute_group_metrics(
-        self, 
-        pre_defined_metric=None, 
-        user_defined_metric=None
-        ):
+    def compute_group_metrics(self, pre_defined_metric=None, user_defined_metric=None):
 
         if pre_defined_metric:
             assert pre_defined_metric in (
@@ -738,23 +710,16 @@ class BiasMonitor:
 
             if pre_defined_metric == "aequitas_group":
                 return aequitas_group(
-                    self.df,
-                    self.score_column,
-                    self.label_column,
-                    self.protected_class
+                    self.df, self.score_column, self.label_column, self.protected_class
                 )
         elif user_defined_metric:
             return user_defined_metric
-        
+
         # Raise error
         else:
             print("A metric (user_defined or pre_defined) must be provided ")
 
-    def compute_bias_metrics(
-        self, 
-        pre_defined_metric=None, 
-        user_defined_metric=None
-        ):
+    def compute_bias_metrics(self, pre_defined_metric=None, user_defined_metric=None):
 
         if pre_defined_metric:
             assert pre_defined_metric in (
@@ -767,25 +732,19 @@ class BiasMonitor:
                     self.score_column,
                     self.label_column,
                     self.protected_class,
-                    self.reference_group
+                    self.reference_group,
                 )
         elif user_defined_metric:
             return user_defined_metric
-        
+
         # Raise error
         else:
             print("A metric (user_defined or pre_defined) must be provided ")
 
 
-
-
-
 def ks_metric(df_1, df_2, numerical_columns):
     ks_tests = [
-        ks_2samp(
-            data1=df_1.loc[:, feat],
-            data2=df_2.loc[:, feat],
-        )
+        ks_2samp(data1=df_1.loc[:, feat], data2=df_2.loc[:, feat],)
         for feat in numerical_columns
     ]
     pvalues = [x[1] for x in ks_tests]
@@ -882,13 +841,7 @@ def js_metric(df_1, df_2, numerical_columns, categorical_columns):
 def aequitas_group(df, score_column, label_column, protected_class):
     # To measure Bias towards protected_class, filter DataFrame
     # to score, label (ground truth), and protected class
-    data_scored = df[
-        [
-            score_column,
-            label_column,
-            protected_class,
-        ]
-    ]
+    data_scored = df[[score_column, label_column, protected_class,]]
 
     # Aequitas expects ground truth under 'label_value'
     data_scored = data_scored.rename(columns={label_column: "label_value"})
@@ -919,16 +872,10 @@ def aequitas_group(df, score_column, label_column, protected_class):
 
 
 def aequitas_bias(df, score_column, label_column, protected_class, reference_group):
-    
+
     # To measure Bias towards protected_class, filter DataFrame
     # to score, label (ground truth), and protected class
-    data_scored = df[
-        [
-            score_column,
-            label_column,
-            protected_class,
-        ]
-    ]
+    data_scored = df[[score_column, label_column, protected_class,]]
 
     data_scored = data_scored.rename(columns={label_column: "label_value"})
 
