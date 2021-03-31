@@ -48,17 +48,17 @@ class DriftDetector:
     Args
     ----
     df_baseline: <pandas.DataFrame>
-        Pandas DataFrame of the baseline dataset. 
+        Pandas DataFrame of the baseline dataset.
 
     df_sample: <pandas.DataFrame>
         Pandas DataFrame of the sample dataset.
 
     categorical_columns: <list of str>
-        A list of categorical columns in the dataset. If not provided, categorical 
+        A list of categorical columns in the dataset. If not provided, categorical
         columns will be inferred from column types.
 
     numerical_columns: <list of str>
-        A list of numerical columns in the dataset. If not provided, numerical 
+        A list of numerical columns in the dataset. If not provided, numerical
         columns will be inferred from column types.
 
     score_column: <str>
@@ -410,7 +410,7 @@ class ConceptDriftDetector:
     Args
     ----
     df_baseline: <pandas.DataFrame>
-        Pandas DataFrame of the baseline dataset. 
+        Pandas DataFrame of the baseline dataset.
 
     df_sample: <pandas.DataFrame>
         Pandas DataFrame of the sample dataset.
@@ -463,8 +463,8 @@ class ConceptDriftDetector:
         self, pre_defined_metric=None, user_defined_metric=None
     ):
         """
-        Calculates concept drift between target columns of baseline and sample 
-        datasets according to a pre-defined metric (jensen-shannon distance or KS) 
+        Calculates concept drift between target columns of baseline and sample
+        datasets according to a pre-defined metric (jensen-shannon distance or KS)
         or a user-defined metric.
 
         param: pre_defined_metric: <str>
@@ -489,13 +489,21 @@ class ConceptDriftDetector:
                 "ks",
             ), "pre_defined_metric should be either 'jensen-shannon' or 'ks'."
 
-            if pre_defined_metric == "jensen-shannon":
-                return js_metric(
-                    df_1=self.df_baseline,
-                    df_2=self.df_sample,
-                    numerical_columns=[self.target_column],
-                    categorical_columns=[],
-                )
+            if pre_defined_metric == 'jensen-shannon':
+                if self.label_type=="numerical":
+                    return js_metric(
+                        df_1=self.df_baseline,
+                        df_2=self.df_sample,
+                        numerical_columns=[self.target_column],
+                        categorical_columns=[]
+                    )
+                elif self.label_type=="categorical":
+                    return js_metric(
+                        df_1=self.df_baseline,
+                        df_2=self.df_sample,
+                        numerical_columns=[],
+                        categorical_columns=[self.target_column]
+                    )
 
             elif pre_defined_metric == "ks":
                 return ks_metric(
@@ -524,7 +532,7 @@ class ModelEvaluator:
     Args
     ----
     df_baseline: <pandas.DataFrame>
-        Pandas DataFrame of the baseline dataset. 
+        Pandas DataFrame of the baseline dataset.
 
     df_sample: <pandas.DataFrame>
         Pandas DataFrame of the sample dataset.
@@ -762,8 +770,8 @@ def js_metric(df_1, df_2, numerical_columns, categorical_columns):
 
     For categorical columns, the probability of each category will be
     computed separately for `df_baseline` and `df_sample`, and the Jensen
-    Shannon distance between the 2 probability arrays will be computed. 
-    
+    Shannon distance between the 2 probability arrays will be computed.
+
     For numerical columns, the values will first be fitted into a gaussian KDE
     separately for `df_baseline` and `df_sample`, and a probability array
     will be sampled from them and compared with the Jensen Shannon distance.
@@ -773,7 +781,7 @@ def js_metric(df_1, df_2, numerical_columns, categorical_columns):
     param: numerical_columns: list of numerical columns
     param: categorical_columns: list of categorical columns
 
-    return: sorted list of tuples containing the column names and Jensen-Shannon 
+    return: sorted list of tuples containing the column names and Jensen-Shannon
     distances.
     """
 
