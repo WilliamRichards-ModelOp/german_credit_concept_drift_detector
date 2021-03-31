@@ -500,12 +500,20 @@ class ConceptDriftDetector:
             ), "pre_defined_metric should be either 'jensen-shannon' or 'ks'."
 
             if pre_defined_metric == 'jensen-shannon':
-                return js_metric(
-                    df_1=self.df_baseline,
-                    df_2=self.df_sample,
-                    numerical_columns=[self.target_column],
-                    categorical_columns=[]
-                )
+                if self.label_type=="numerical":
+                    return js_metric(
+                        df_1=self.df_baseline,
+                        df_2=self.df_sample,
+                        numerical_columns=[self.target_column],
+                        categorical_columns=[]
+                    )
+                elif self.label_type=="categorical":
+                    return js_metric(
+                        df_1=self.df_baseline,
+                        df_2=self.df_sample,
+                        numerical_columns=[],
+                        categorical_columns=[self.target_column]
+                    )
 
             elif pre_defined_metric == 'ks':
                 return ks_metric(
