@@ -48,7 +48,7 @@ def metrics(external_inputs: List, external_outputs: List, external_model_assets
         label_type="categorical",
     )
 
-    output = drift_detector.calculate_drift(
+    output = concept_drift_detector.calculate_drift(
         pre_defined_metric="jensen-shannon", user_defined_metric=None
     )
 
