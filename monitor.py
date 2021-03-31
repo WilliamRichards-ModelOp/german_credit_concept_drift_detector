@@ -13,7 +13,13 @@ def begin():
     global SPARK
     SPARK = SparkSession.builder.appName("DriftTest").getOrCreate()
 
-    # Read schema
+    ### Read schema
+    # Print schema file for debugging
+    schema_filename = "df_sample_scored_input_schema.avsc"
+    with open(schema_filename, "r") as f:
+        schema_contents = f.read()
+    print("Reading schema. Contents of {}:\n{}".format(schema_filename, schema_contents))
+
     global SCHEMA
     SCHEMA = pd.read_json("df_sample_scored_input_schema.avsc", orient="records")
     # set schema index to be "name"
