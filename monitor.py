@@ -18,7 +18,9 @@ def begin():
     schema_filename = "df_sample_scored_input_schema.avsc"
     with open(schema_filename, "r") as f:
         schema_contents = f.read()
-    print("Reading schema. Contents of {}:\n{}".format(schema_filename, schema_contents))
+    print(
+        "Reading schema. Contents of {}:\n{}".format(schema_filename, schema_contents)
+    )
 
     global SCHEMA
     SCHEMA = pd.read_json("df_sample_scored_input_schema.avsc", orient="records")
@@ -54,8 +56,8 @@ def metrics(external_inputs: List, external_outputs: List, external_model_assets
         label_type="categorical",
     )
 
-    output = concept_drift_detector.calculate_drift(
-        pre_defined_metric="jensen-shannon", user_defined_metric=None
+    output = concept_drift_detector.calculate_concept_drift(
+        pre_defined_metric="jensen-shannon", user_defined_metric=None,
     )
 
     print("Monitor output:")
