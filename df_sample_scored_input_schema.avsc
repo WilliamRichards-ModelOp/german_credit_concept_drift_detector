@@ -6,7 +6,7 @@
         "role": "non-predictor",
         "protectedClass": false,
         "driftCandidate": false,
-        "specialValues": [],
+        "specialValues": [{name: swag}, {values: { key: val, key: val}}],
         "scoringOptional": false
     },
     {
@@ -16,7 +16,7 @@
         "role": "predictor",
         "protectedClass": false,
         "driftCandidate": true,
-        "specialValues": [],
+        "specialValues": [{name: swag}, {values: { key: val, key: val}}],
         "scoringOptional": false
     },
     {
