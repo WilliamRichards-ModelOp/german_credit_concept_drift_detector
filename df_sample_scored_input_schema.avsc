@@ -6,7 +6,16 @@
         "role": "non-predictor",
         "protectedClass": false,
         "driftCandidate": false,
-        "specialValues": [{name: swag}, {values: { key: val, key: val}}],
+        "specialValues": [
+                {
+                    "values": [100,125],
+                    "purpose": "some reason"
+                },
+                {
+                    "values": [175],
+                    "purpose": "some other reason"
+                }
+            ],
         "scoringOptional": false
     },
     {
@@ -16,7 +25,16 @@
         "role": "predictor",
         "protectedClass": false,
         "driftCandidate": true,
-        "specialValues": [{name: swag}, {values: { key: val, key: val}}],
+        "specialValues": [
+                {
+                    "values": [100,125],
+                    "purpose": "some reason"
+                },
+                {
+                    "values": [175],
+                    "purpose": "some other reason"
+                }
+            ],
         "scoringOptional": false
     },
     {
